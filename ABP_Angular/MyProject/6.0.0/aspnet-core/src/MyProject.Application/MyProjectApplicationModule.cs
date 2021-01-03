@@ -2,11 +2,13 @@
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using MyProject.Authorization;
+using MyProject.Service;
 
 namespace MyProject
 {
     [DependsOn(
-        typeof(MyProjectCoreModule), 
+        typeof(MyProjectCoreModule),
+        typeof(MyProjectServiceModule),
         typeof(AbpAutoMapperModule))]
     public class MyProjectApplicationModule : AbpModule
     {

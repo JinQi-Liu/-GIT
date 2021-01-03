@@ -21,6 +21,7 @@ using MyProject.Roles.Dto;
 using MyProject.Users.Dto;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using MyProject.Service.ServiceInterface.Auth;
 
 namespace MyProject.Users
 {
@@ -33,6 +34,7 @@ namespace MyProject.Users
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly IAbpSession _abpSession;
         private readonly LogInManager _logInManager;
+        private readonly IAuthGroupEmployeeInfoService _authGroupEmployeeInfoService;
 
         public UserAppService(
             IRepository<User, long> repository,
@@ -41,7 +43,8 @@ namespace MyProject.Users
             IRepository<Role> roleRepository,
             IPasswordHasher<User> passwordHasher,
             IAbpSession abpSession,
-            LogInManager logInManager)
+            LogInManager logInManager,
+            IAuthGroupEmployeeInfoService authGroupEmployeeInfoService)
             : base(repository)
         {
             _userManager = userManager;
@@ -50,6 +53,7 @@ namespace MyProject.Users
             _passwordHasher = passwordHasher;
             _abpSession = abpSession;
             _logInManager = logInManager;
+            _authGroupEmployeeInfoService = authGroupEmployeeInfoService;
         }
 
         public override async Task<UserDto> CreateAsync(CreateUserDto input)
@@ -159,6 +163,9 @@ namespace MyProject.Users
 
         protected override IQueryable<User> CreateFilteredQuery(PagedUserResultRequestDto input)
         {
+            List<Service.EFCore.Entity.HREmployeeInfo>  eList = _authGroupEmployeeInfoService.Test();
+            List<HREmployeeInfoDto> edList = new List<HREmployeeInfoDto>();
+            ObjectMapper.Map<List<Service.EFCore.Entity.HREmployeeInfo>, List<HREmployeeInfoDto>>(eList, edList);
             return Repository.GetAllIncluding(x => x.Roles)
                 .WhereIf(!input.Keyword.IsNullOrWhiteSpace(), x => x.UserName.Contains(input.Keyword) || x.Name.Contains(input.Keyword) || x.EmailAddress.Contains(input.Keyword))
                 .WhereIf(input.IsActive.HasValue, x => x.IsActive == input.IsActive);

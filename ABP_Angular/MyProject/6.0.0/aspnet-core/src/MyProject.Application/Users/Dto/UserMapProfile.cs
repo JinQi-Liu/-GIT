@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using MyProject.Authorization.Users;
+using MyProject.Service.EFCore.Entity;
+using System.Collections.Generic;
 
 namespace MyProject.Users.Dto
 {
@@ -14,6 +16,8 @@ namespace MyProject.Users.Dto
 
             CreateMap<CreateUserDto, User>();
             CreateMap<CreateUserDto, User>().ForMember(x => x.Roles, opt => opt.Ignore());
+
+            CreateMap<HREmployeeInfoDto, HREmployeeInfo>();
         }
     }
 }
